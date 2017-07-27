@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Book_Listing</string>
+    <string name="submit">Submit</string>
+    <string name="presearch">Search for a book!</string>
+    <string name="no_connection">Theres is no internet connection</string>
+    <string name="no_books">No books found</string>
+</resources>
