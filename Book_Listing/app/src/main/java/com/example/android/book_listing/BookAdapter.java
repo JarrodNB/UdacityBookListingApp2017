@@ -14,6 +14,7 @@ import java.util.List;
 
 public class BookAdapter extends ArrayAdapter<Book> {
 
+
     public BookAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List<Book> objects) {
         super(context, resource, objects);
     }
@@ -22,14 +23,25 @@ public class BookAdapter extends ArrayAdapter<Book> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view = convertView;
+        ViewHolder holder;
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.list_item, parent, false);
+            holder = new ViewHolder();
+            holder.title = (TextView) view.findViewById(R.id.title);
+            holder.author = (TextView) view.findViewById(R.id.authors);
+            view.setTag(holder);
+        } else {
+            holder = (ViewHolder) view.getTag();
         }
         Book book = getItem(position);
-        TextView title = (TextView) view.findViewById(R.id.title);
-        TextView author = (TextView) view.findViewById(R.id.authors);
-        title.setText(book.getTitle());
-        author.setText(book.getAuthor());
+        holder.title.setText(book.getTitle());
+        holder.author.setText(book.getAuthor());
         return view;
     }
+
+    private static class ViewHolder{
+        TextView title;
+        TextView author;
+    }
 }
+

@@ -16,32 +16,33 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Book>> {
 
     private String url;
     private BookAdapter adapter;
-    private ListView listView;
-    private EditText searchBar;
-    private TextView emptystate;
-    private ProgressBar bar;
+    @BindView(R.id.list_view) ListView listView;
+    @BindView(R.id.search_bar) EditText searchBar;
+    @BindView(R.id.empty_state) TextView emptystate;
+    @BindView(R.id.bar) ProgressBar bar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        listView = (ListView) findViewById(R.id.list_view);
+        ButterKnife.bind(this);
         List<Book> books = new ArrayList<Book>();
         adapter = new BookAdapter(this, R.layout.list_item, books);
         listView.setAdapter(adapter);
-        emptystate = (TextView) findViewById(R.id.empty_state);
         listView.setEmptyView(emptystate);
-        searchBar = (EditText) findViewById(R.id.search_bar);
         Button submit = (Button) findViewById(R.id.search_button);
-        bar = (ProgressBar) findViewById(R.id.bar);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,10 +52,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 updateList(query);
             }
         });
+        final Toast website = Toast.makeText(this, "Website unavailable", Toast.LENGTH_SHORT);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Book book = adapter.getItem(position);
+                if (book.getWebsiteUrl().equals("N/A")){
+                    website.show();
+                }
                 Uri bookURI = Uri.parse(book.getWebsiteUrl());
                 Intent websiteIntent = new Intent(Intent.ACTION_VIEW, bookURI);
                 startActivity(websiteIntent);

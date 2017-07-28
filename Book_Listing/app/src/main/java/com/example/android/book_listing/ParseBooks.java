@@ -1,5 +1,7 @@
 package com.example.android.book_listing;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,6 +26,7 @@ public class ParseBooks {
         try {
             urlSearch = new URL(url);
         } catch (MalformedURLException e) {
+            Log.e("ParseBooks", e.getMessage());
         }
         List<Book> books = new ArrayList<Book>();
         try {
@@ -35,17 +38,31 @@ public class ParseBooks {
             for (int j = 0; j < array.length(); j++) {
                 JSONObject book = array.getJSONObject(j);
                 JSONObject bookInfo = book.getJSONObject("volumeInfo");
-                title = bookInfo.getString("title");
-                website = bookInfo.getString("infoLink");
-                JSONArray authorArray = bookInfo.getJSONArray("authors");
-                for (int i = 0; i < authorArray.length(); i++) {
-                    author += authorArray.getString(i) + ", ";
+                if (bookInfo.has("title")){
+                    title = bookInfo.getString("title");
+                } else {
+                    title = "Title Unavailable";
                 }
-                books.add(new Book(title, author.trim().substring(0, author.length() - 2), website));
+                if (bookInfo.has("infoLink")){
+                    website = bookInfo.getString("infoLink");
+                } else {
+                    website = "N/A";
+                }
+                if (bookInfo.has("authors")){
+                    JSONArray authorArray = bookInfo.getJSONArray("authors");
+                    for (int i = 0; i < authorArray.length(); i++) {
+                        author += authorArray.getString(i) + ", ";
+                    }
+                    author = author.trim().substring(0, author.length() - 2);
+                } else {
+                    author = "Authors unavailable";
+                }
+                books.add(new Book(title, author, website));
                 title = "";
                 author = "";
             }
         } catch (JSONException e) {
+            Log.e("ParseBooks", e.getMessage());
         }
         return books;
     }
@@ -67,12 +84,15 @@ public class ParseBooks {
                 response = getStringResponse(input);
             }
         } catch (IOException e) {
+            Log.e("ParseBooks", e.getMessage());
         }
         connection.disconnect();
         try {
             input.close();
         } catch (IOException e) {
+            Log.e("ParseBooks", e.getMessage());
         } catch (NullPointerException x) {
+            Log.e("ParseBooks", x.getMessage());
         }
         return response;
     }
